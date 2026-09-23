@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#171717">
+  <meta name="description" content="Каталог Telegram NFT, username и номеров — визуальное демо">
+  <title>UpgraderNFT — каталог</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="app" id="app">
+    <header class="topbar">
+      <div class="mark" aria-hidden="true">✦</div>
+      <div class="topbar-copy"><strong>UpgraderNFT</strong><span id="pageSubtitle">Веб-каталог</span></div>
+      <span class="demo-label">Демо</span>
+    </header>
+
+    <main id="catalogPage">
+      <nav class="tabs" aria-label="Тип каталога">
+        <button class="tab is-active" type="button" data-tab="nft" aria-pressed="true">NFT</button>
+        <button class="tab" type="button" data-tab="username" aria-pressed="false">Username</button>
+        <button class="tab" type="button" data-tab="number" aria-pressed="false">Number</button>
+      </nav>
+
+      <section class="filters" aria-label="Фильтры">
+        <label class="filter filter-half" id="collectionFilter"><span>Коллекции</span><select id="collection" aria-label="Коллекции"></select><i aria-hidden="true">⌄</i></label>
+        <label class="filter filter-half" id="backdropFilter"><span>Фон</span><select id="backdrop" aria-label="Фон"><option>Все</option><option>Amber</option><option>Slate</option><option>Violet</option><option>Pine Green</option></select><i aria-hidden="true">⌄</i></label>
+        <label class="filter filter-wide" id="symbolFilter"><span>Символ</span><select id="symbol" aria-label="Символ"><option>Все</option><option>Moon</option><option>Star</option><option>Diamond</option></select><i aria-hidden="true">⌄</i></label>
+        <label class="sort"><span aria-hidden="true">☷</span><select id="sort" aria-label="Сортировка"><option value="default">Сортировка</option><option value="price-asc">Сначала дешёвые</option><option value="price-desc">Сначала дорогие</option><option value="name">По названию</option></select></label>
+      </section>
+
+      <div class="collection-bar"><strong id="collectionTitle">Durov’s Glasses</strong><button id="copyLink" type="button">▣ Скопировать ссылку</button></div>
+      <p class="result-note" id="resultNote"></p>
+      <div class="grid" id="grid" aria-live="polite"></div>
+      <div class="empty" id="emptyState" hidden>По этим фильтрам ничего не найдено. Выбери другую коллекцию или фон.</div>
+    </main>
+
+    <main class="reviews-page" id="reviewsPage" hidden>
+      <h1 class="reviews-header">Отзывы</h1>
+      <nav class="review-filters" aria-label="Фильтр отзывов"><button type="button" class="is-active" data-review-filter="all">Все отзывы <small>3 примера</small></button><button type="button" data-review-filter="positive">Позитивные <small>3 · 100%</small></button><button type="button" data-review-filter="negative">Негативные <small>0 · 0%</small></button></nav>
+      <p class="review-disclaimer">Примеры из снимка оригинального интерфейса. Это не отзывы о данном боте; новые отзывы и публикация не подключены.</p>
+      <div id="reviewList" class="review-list" aria-live="polite"></div>
+    </main>
+    <footer>Демонстрационный интерфейс. Оплата, аренда и выдача не подключены.</footer>
+  </div>
+
+  <div class="sheet-backdrop" id="sheetBackdrop" hidden></div>
+  <section class="sheet" id="detailSheet" role="dialog" aria-modal="true" aria-labelledby="detailTitle" hidden>
+    <div class="sheet-handle"></div><button class="sheet-close" id="closeSheet" type="button" aria-label="Закрыть">×</button>
+    <div class="sheet-art" id="detailArt"></div>
+    <div class="sheet-body"><span class="sheet-kicker" id="detailKind"></span><h2 id="detailTitle"></h2><p id="detailDescription"></p><div class="sheet-price"><span>Цена</span><strong id="detailPrice"></strong></div><button class="sheet-action" type="button" disabled>Оформление недоступно в демо</button></div>
+  </section>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
