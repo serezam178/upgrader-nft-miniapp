@@ -9,8 +9,7 @@ const products = {
     {id:'3663',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'mint',symbol:'Diamond',min:1,max:34,ton:'0.12',rub:'14.34'},
     {id:'614',name:'Rare Bird',collection:'Rare Bird',glyph:'🦜',bg:'violet',symbol:'Star',min:1,max:180,rub:'5.66'},
     {id:'615',name:'Rare Bird',collection:'Rare Bird',glyph:'🦚',bg:'blue',symbol:'Moon',min:1,max:30,rub:'4.36'},
-    {id:'616',name:'Rare Bird',collection:'Rare Bird',glyph:'🪶',bg:'amber',symbol:'Diamond',min:2,max:179,rub:'2.89'},
-    {id:'491',name:'True Opal',collection:'Astral Shard',glyph:'💎',bg:'pine',symbol:'Moon',min:1,max:180,rub:'15 148'}
+    {id:'616',name:'Rare Bird',collection:'Rare Bird',glyph:'🪶',bg:'amber',symbol:'Diamond',min:2,max:179,rub:'2.89'}
   ],
   username: [
     ['goldyfix','3.65',1,90],['cuavas','3.65',1,90],['sendlives','3.65',1,90],['ywopa','3.65',1,90],['wacude','3.65',1,90],['sorbish','3.65',1,90],['portbold','3.65',1,90],['mihyp','3.67',1,90],['br_0s','1.91',1,90],['tobycollyer','3.67',1,180]
@@ -159,7 +158,9 @@ function renderReviews(filter='all'){
 document.querySelectorAll('.tab').forEach(button=>button.addEventListener('click',()=>setTab(button.dataset.tab)));
 for(const id of ['collection','backdrop','symbol','sort']) $(id).addEventListener('change',renderCatalog);
 $('copyLink').addEventListener('click',async()=>{
-  const url=new URL(location.href);url.searchParams.set('view','catalog');url.searchParams.set('collection',$('collection').value);
+  const url=new URL(location.href);url.searchParams.set('view','catalog');url.searchParams.set('tab',tab);
+  if(tab==='nft')url.searchParams.set('collection',$('collection').value);
+  else url.searchParams.delete('collection');
   try{await navigator.clipboard.writeText(url.toString());toast('Ссылка скопирована');}
   catch{toast('Не удалось скопировать ссылку');}
 });
@@ -167,7 +168,7 @@ $('closeSheet').addEventListener('click',closeDetail);
 $('sheetBackdrop').addEventListener('click',closeDetail);
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('detailSheet').hidden)closeDetail();});
 document.querySelectorAll('[data-review-filter]').forEach(button=>button.addEventListener('click',()=>{
-  document.querySelectorAll('[data-review-filter]').forEach(item=>item.classList.toggle('is-active',item===button));
+  document.querySelectorAll('[data-review-filter]').forEach(item=>{const active=item===button;item.classList.toggle('is-active',active);item.setAttribute('aria-pressed',String(active));});
   renderReviews(button.dataset.reviewFilter);
 }));
 
@@ -177,7 +178,7 @@ $('reviewsPage').hidden=!isReviews;
 $('pageSubtitle').textContent=isReviews?'Отзывы':'Веб-каталог';
 if(isReviews)renderReviews();
 else{
-  setTab('nft');
+  setTab(['nft','username','number'].includes(params.get('tab'))?params.get('tab'):'nft');
   const requested=params.get('collection');
   if(requested&&[...$('collection').options].some(option=>option.value===requested)){$('collection').value=requested;renderCatalog();}
 }
