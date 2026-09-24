@@ -19,10 +19,10 @@ const products = {
   ],
   username: [
     ['goldyfix','3.65',1,90],['cuavas','3.65',1,90],['sendlives','3.65',1,90],['ywopa','3.65',1,90],['wacude','3.65',1,90],['sorbish','3.65',1,90],['portbold','3.65',1,90],['mihyp','3.67',1,90],['br_0s','1.91',1,90],['tobycollyer','3.67',1,180]
-  ].map(([name,rub,min,max],i)=>({id:String(i+1),name:'@'+name,glyph:'@',bg:['violet','blue','pine','amber'][i%4],min,max,rub})),
+  ].map(([name,rub,min,max],i)=>({id:String(i+1),name:'@'+name,glyph:'@',bg:['violet','blue','pine','amber'][i%4],min,max,rub,ton:(Number(rub)/121.3).toFixed(2),image:`./assets/username/${name}.webp`})),
   number: [
     ['+888 0953 7412','165.04',100,180],['+888 0370 2141','172.53',34,180],['+888 0226 4750','171.18',34,180],['+888 0504 2473','163.09',34,180],['+888 0843 7159','163.09',34,90],['+888 0157 4932','163.09',34,90],['+888 0769 3604','164.44',34,180],['+888 0125 1254','256.09',34,90],['+888 0727 0919','256.09',34,90],['+888 0926 4924','165.79',34,90]
-  ].map(([name,rub,min,max],i)=>({id:String(i+1),name,glyph:'☎',bg:['slate','mint','violet','blue'][i%4],min,max,rub}))
+  ].map(([name,rub,min,max],i)=>({id:String(i+1),name,glyph:'☎',bg:['slate','mint','violet','blue'][i%4],min,max,rub,ton:(Number(rub)/121.3).toFixed(2),image:`./assets/number/${name.replace(/\D/g,'')}.webp`}))
 };
 
 const $ = id => document.getElementById(id);
@@ -68,7 +68,7 @@ function toast(message) {
 function fillCollections() {
   const select = $('collection');
   select.replaceChildren();
-  const names = [...new Set(products[tab].map(item=>item.collection).filter(Boolean))];
+  const names = [...new Set(products.nft.map(item=>item.collection).filter(Boolean))];
   for (const name of names) {
     const option = document.createElement('option');
     option.value = name;
@@ -84,10 +84,9 @@ function setTab(next) {
     button.classList.toggle('is-active',active);
     button.setAttribute('aria-pressed',String(active));
   }
-  const isNft = tab === 'nft';
-  $('collectionFilter').hidden = !isNft;
-  $('backdropFilter').classList.toggle('filter-wide',!isNft);
-  $('symbolFilter').hidden = !isNft;
+  $('nftFilters').hidden = tab !== 'nft';
+  $('usernameFilters').hidden = tab !== 'username';
+  $('numberFilters').hidden = tab !== 'number';
   $('backdrop').value = 'Все';
   $('symbol').value = 'Все';
   $('sort').value = 'default';
@@ -96,7 +95,29 @@ function setTab(next) {
 }
 
 function filteredProducts() {
-  let items = products[tab].filter(item => (tab !== 'nft' || item.collection === $('collection').value) && ($('backdrop').value === 'Все' || item.bg === ({'Amber':'amber','Slate':'slate','Violet':'violet','Pine Green':'pine'}[$('backdrop').value])) && (tab !== 'nft' || $('symbol').value === 'Все' || item.symbol === $('symbol').value));
+  let items = products[tab].filter(item => {
+    if (tab === 'nft') return item.collection === $('collection').value &&
+      ($('backdrop').value === 'Все' || item.bg === ({Amber:'amber',Slate:'slate',Violet:'violet','Pine Green':'pine'}[$('backdrop').value])) &&
+      ($('symbol').value === 'Все' || item.symbol === $('symbol').value);
+    if (tab === 'username') {
+      const name = item.name.slice(1);
+      const length = $('usernameLength').value;
+      return name.toLowerCase().includes($('usernameSearch').value.trim().toLowerCase().replace(/^@/,'')) &&
+        (length === 'all' || length === 'short' && name.length <= 5 || length === 'medium' && name.length >= 6 && name.length <= 8 || length === 'long' && name.length >= 9) &&
+        ($('usernameDigits').value === 'any' || (/[0-9]/.test(name) ? 'yes' : 'no') === $('usernameDigits').value) &&
+        ($('usernameUnderscore').value === 'any' || (name.includes('_') ? 'yes' : 'no') === $('usernameUnderscore').value);
+    }
+    const digits = item.name.replace(/\D/g,'').slice(3);
+    const search = $('numberSearch').value.replace(/\D/g,'');
+    const left = digits.slice(0,4), right = digits.slice(-4);
+    return (!search || item.name.replace(/\D/g,'').includes(search)) &&
+      ($('numberLength').value === 'all' || ($('numberLength').value === 'short' ? digits.replace(/^0+/,'').length <= 4 : digits.replace(/^0+/,'').length > 4)) &&
+      ($('numberEqual').value === 'any' || (left === right ? 'yes' : 'no') === $('numberEqual').value) &&
+      ($('numberMirror').value === 'any' || (left === right.split('').reverse().join('') ? 'yes' : 'no') === $('numberMirror').value) &&
+      ($('numberUnique').value === 'all' || new Set(digits).size <= Number($('numberUnique').value)) &&
+      ($('numberRepeat').value === 'all' || (/([0-9])\1/.test(digits) ? 'yes' : 'no') === $('numberRepeat').value) &&
+      ($('numberHasDigit').value === 'all' || digits.includes($('numberHasDigit').value));
+  });
   const sort = $('sort').value;
   if (sort === 'price-asc') items.sort((a,b)=>Number(a.rub.replaceAll(' ',''))-Number(b.rub.replaceAll(' ','')));
   if (sort === 'price-desc') items.sort((a,b)=>Number(b.rub.replaceAll(' ',''))-Number(a.rub.replaceAll(' ','')));
@@ -112,7 +133,7 @@ function card(item) {
   const art = document.createElement('div');
   art.className = `art ${item.bg}`;
   const id = document.createElement('span');
-  id.className = 'id'; id.textContent = tab === 'nft' ? `#${item.id}` : tab === 'username' ? 'Username' : '+888';
+  id.className = 'id'; id.textContent = `#${item.id}`;
   const glyph = document.createElement('span');
   glyph.className = 'glyph'; glyph.textContent = item.glyph;
   const duration = document.createElement('span');
@@ -123,7 +144,15 @@ function card(item) {
     art.classList.add('has-animation');
     art.append(animation);
   }
-  art.append(id,glyph,duration);
+  if (item.image) {
+    const photo = document.createElement('img');
+    photo.className='nft-photo'; photo.src=item.image; photo.alt=''; photo.loading='lazy';
+    photo.addEventListener('error',()=>{photo.remove();art.append(glyph);});
+    art.append(photo);
+  }
+  if (tab === 'nft') art.append(id);
+  if (!item.image) art.append(glyph);
+  art.append(duration);
   const name = document.createElement('strong');
   name.className = 'card-title'; name.textContent = item.name;
   const price = document.createElement('div');
@@ -145,8 +174,7 @@ function renderCatalog() {
   for (const animation of animationHandles.values()) animation.destroy();
   animationHandles.clear();
   const items = filteredProducts();
-  const title = tab === 'nft' ? $('collection').value : tab === 'username' ? 'NFT-юзернеймы' : 'NFT-номера +888';
-  $('collectionTitle').textContent = title;
+  $('collectionTitle').textContent = $('collection').value || 'Durov’s Glasses';
   $('resultNote').textContent = `${items.length} ${items.length === 1 ? 'позиция' : 'позиций'} · сохранённый снимок каталога`;
   $('grid').replaceChildren(...items.map(card));
   document.querySelectorAll('.nft-animation').forEach(container => {
@@ -198,7 +226,8 @@ function renderReviews(filter='all'){
 }
 
 document.querySelectorAll('.tab').forEach(button=>button.addEventListener('click',()=>setTab(button.dataset.tab)));
-for(const id of ['collection','backdrop','symbol','sort']) $(id).addEventListener('change',renderCatalog);
+for(const id of ['collection','backdrop','symbol','sort','usernameLength','usernameDigits','usernameUnderscore','numberLength','numberEqual','numberMirror','numberUnique','numberRepeat','numberHasDigit']) $(id).addEventListener('change',renderCatalog);
+for(const id of ['usernameSearch','numberSearch']) $(id).addEventListener('input',renderCatalog);
 $('copyLink').addEventListener('click',async()=>{
   const url=new URL(location.href);url.searchParams.set('view','catalog');url.searchParams.set('tab',tab);
   if(tab==='nft')url.searchParams.set('collection',$('collection').value);

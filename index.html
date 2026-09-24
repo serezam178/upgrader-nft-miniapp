@@ -6,10 +6,10 @@
   <meta name="theme-color" content="#171717">
   <meta name="description" content="Каталог Telegram NFT, username и номеров — визуальное демо">
   <title>UpgraderNFT — каталог</title>
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=20260924-2">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="./vendor/lottie.min.js"></script>
-  <script src="./app.js" defer></script>
+  <script src="./vendor/lottie.min.js?v=20260924-2"></script>
+  <script src="./app.js?v=20260924-2" defer></script>
 </head>
 <body>
   <div class="app" id="app">
@@ -26,12 +26,27 @@
         <button class="tab" type="button" data-tab="number" aria-pressed="false">Number</button>
       </nav>
 
-      <section class="filters" aria-label="Фильтры">
+      <section class="filters" id="nftFilters" aria-label="Фильтры NFT">
         <label class="filter filter-half" id="collectionFilter"><span>Коллекции</span><select id="collection" aria-label="Коллекции"></select><strong class="filter-count" aria-hidden="true">1 выбрана</strong><i aria-hidden="true">⌄</i></label>
         <label class="filter filter-half" id="backdropFilter"><span>Фон</span><select id="backdrop" aria-label="Фон"><option>Все</option><option>Amber</option><option>Slate</option><option>Violet</option><option>Pine Green</option></select><i aria-hidden="true">⌄</i></label>
         <label class="filter filter-wide" id="symbolFilter"><span>Символ</span><select id="symbol" aria-label="Символ"><option>Все</option><option>Moon</option><option>Star</option><option>Diamond</option></select><i aria-hidden="true">⌄</i></label>
-        <label class="sort"><span aria-hidden="true">☷</span><select id="sort" aria-label="Сортировка"><option value="default">Сортировка</option><option value="price-asc">Сначала дешёвые</option><option value="price-desc">Сначала дорогие</option><option value="name">По названию</option></select></label>
       </section>
+      <section class="filters" id="usernameFilters" aria-label="Фильтры Username" hidden>
+        <label class="search-filter"><span aria-hidden="true">⌕</span><input id="usernameSearch" type="search" placeholder="Поиск username..." aria-label="Поиск username" autocomplete="off"></label>
+        <label class="filter"><span>Длина @username</span><select id="usernameLength" aria-label="Длина @username"><option value="all">Все</option><option value="short">До 5 символов</option><option value="medium">6–8 символов</option><option value="long">9+ символов</option></select><i aria-hidden="true">⌄</i></label>
+        <label class="filter"><span>Числа</span><select id="usernameDigits" aria-label="Числа"><option value="any">Без разницы</option><option value="yes">Есть</option><option value="no">Нет</option></select><i aria-hidden="true">⌄</i></label>
+        <label class="filter filter-wide"><span>Символ "_"</span><select id="usernameUnderscore" aria-label="Символ подчеркивания"><option value="any">Без разницы</option><option value="yes">Есть</option><option value="no">Нет</option></select><i aria-hidden="true">⌄</i></label>
+      </section>
+      <section class="filters" id="numberFilters" aria-label="Фильтры Number" hidden>
+        <label class="search-filter"><span aria-hidden="true">⌕</span><input id="numberSearch" type="search" placeholder="Поиск номера..." aria-label="Поиск номера" autocomplete="off"></label>
+        <label class="filter"><span>Тип длины</span><select id="numberLength" aria-label="Тип длины"><option value="all">Все</option><option value="short">Короткие (≤4 цифры)</option><option value="long">Длинные (&gt;4 цифр)</option></select><i aria-hidden="true">⌄</i></label>
+        <label class="filter"><span>Левая = Правая</span><select id="numberEqual" aria-label="Левая равна правой"><option value="any">Без разницы</option><option value="yes">Да</option><option value="no">Нет</option></select><i aria-hidden="true">⌄</i></label>
+        <label class="filter"><span>Зеркальность</span><select id="numberMirror" aria-label="Зеркальность"><option value="any">Без разницы</option><option value="yes">Да</option><option value="no">Нет</option></select><i aria-hidden="true">⌄</i></label>
+        <label class="filter"><span>Уникальные цифры</span><select id="numberUnique" aria-label="Уникальные цифры"><option value="all">Все</option><option value="2">До 2</option><option value="3">До 3</option><option value="4">До 4</option></select><i aria-hidden="true">⌄</i></label>
+        <label class="filter"><span>Повторы подряд</span><select id="numberRepeat" aria-label="Повторы подряд"><option value="all">Все</option><option value="yes">Есть</option><option value="no">Нет</option></select><i aria-hidden="true">⌄</i></label>
+        <label class="filter"><span>Наличие цифр</span><select id="numberHasDigit" aria-label="Наличие цифр"><option value="all">Все</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select><i aria-hidden="true">⌄</i></label>
+      </section>
+      <label class="sort"><span aria-hidden="true">☷</span><select id="sort" aria-label="Сортировка"><option value="default">Сортировка</option><option value="price-asc">Сначала дешёвые</option><option value="price-desc">Сначала дорогие</option><option value="name">По названию</option></select></label>
 
       <div class="collection-bar"><strong id="collectionTitle">Durov’s Glasses</strong><button id="copyLink" type="button">▣ Скопировать ссылку</button></div>
       <p class="result-note" id="resultNote"></p>
