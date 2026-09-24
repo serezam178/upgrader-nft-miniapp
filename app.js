@@ -1,12 +1,18 @@
 /* Static visual catalogue. No checkout, network API or Telegram user data. */
 const products = {
   nft: [
-    {id:'3289',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'amber',symbol:'Star',min:1,max:180,ton:'0.12',rub:'14.34'},
-    {id:'3609',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'slate',symbol:'Diamond',min:1,max:34,ton:'0.12',rub:'14.34'},
-    {id:'2183',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'violet',symbol:'Moon',min:1,max:180,ton:'0.13',rub:'15.77'},
-    {id:'2627',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'pine',symbol:'Star',min:1,max:180,ton:'1.21',rub:'144.79'},
-    {id:'946',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',symbol:'Moon',min:1,max:34,ton:'0.12',rub:'14.19'},
-    {id:'3663',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'mint',symbol:'Diamond',min:1,max:34,ton:'0.12',rub:'14.34'},
+    {id:'2674',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',symbol:'Star',min:1,max:180,ton:'0.24',rub:'29.18',animation:'2674'},
+    {id:'2338',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'violet',symbol:'Diamond',min:1,max:134,ton:'0.15',rub:'18.09',animation:'2338'},
+    {id:'1877',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'amber',symbol:'Moon',min:1,max:34,ton:'0.22',rub:'26.26',animation:'1877'},
+    {id:'945',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',symbol:'Star',min:1,max:34,ton:'0.12',rub:'14.44',animation:'945'},
+    {id:'3614',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'amber',symbol:'Diamond',min:1,max:34,ton:'0.12',rub:'14.59',animation:'3614'},
+    {id:'3289',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'amber',symbol:'Star',min:1,max:180,ton:'0.12',rub:'14.59',animation:'3289'},
+    {id:'2627',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'pine',symbol:'Star',min:1,max:180,ton:'1.21',rub:'147.35',animation:'2627'},
+    {id:'946',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',symbol:'Moon',min:1,max:34,ton:'0.12',rub:'14.44',animation:'946'},
+    {id:'779',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'violet',symbol:'Moon',min:1,max:180,ton:'0.3',rub:'36.91',animation:'779'},
+    {id:'3269',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',symbol:'Star',min:1,max:180,ton:'0.4',rub:'48.58',animation:'3269'},
+    {id:'3442',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'amber',symbol:'Diamond',min:1,max:30,ton:'0.59',rub:'71.49',animation:'3442'},
+    {id:'655',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'violet',symbol:'Moon',min:1,max:180,ton:'0.3',rub:'36.91',animation:'655'},
     {id:'614',name:'Rare Bird',collection:'Rare Bird',glyph:'🦜',bg:'violet',symbol:'Star',min:1,max:180,rub:'5.66'},
     {id:'615',name:'Rare Bird',collection:'Rare Bird',glyph:'🦚',bg:'blue',symbol:'Moon',min:1,max:30,rub:'4.36'},
     {id:'616',name:'Rare Bird',collection:'Rare Bird',glyph:'🪶',bg:'amber',symbol:'Diamond',min:2,max:179,rub:'2.89'}
@@ -24,8 +30,27 @@ const params = new URLSearchParams(location.search);
 let tab = 'nft';
 let lastFocus = null;
 let toastTimer;
+const animationHandles = new Map();
+const animationObserver = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+  for (const entry of entries) {
+    const container = entry.target;
+    if (entry.isIntersecting) {
+      let animation = animationHandles.get(container);
+      if (!animation && window.lottie) {
+        animation = window.lottie.loadAnimation({
+          container, renderer:'canvas', loop:!reducedMotion, autoplay:!reducedMotion,
+          path:`./assets/nft/durovsglasses-${container.dataset.animation}.json`
+        });
+        animation.addEventListener('DOMLoaded',()=>container.classList.add('is-loaded'));
+        animationHandles.set(container,animation);
+      } else if (!reducedMotion) animation?.play();
+    } else animationHandles.get(container)?.pause();
+  }
+},{rootMargin:'100px'}) : null;
 
 const tg = window.Telegram?.WebApp;
+document.body.classList.toggle('in-telegram',Boolean(tg?.initData));
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (tg) {
   tg.ready();
   tg.expand();
@@ -92,6 +117,12 @@ function card(item) {
   glyph.className = 'glyph'; glyph.textContent = item.glyph;
   const duration = document.createElement('span');
   duration.className = 'duration'; duration.textContent = `${item.min}–${item.max} дн.`;
+  if (item.animation) {
+    const animation = document.createElement('div');
+    animation.className='nft-animation'; animation.dataset.animation=item.animation;
+    art.classList.add('has-animation');
+    art.append(animation);
+  }
   art.append(id,glyph,duration);
   const name = document.createElement('strong');
   name.className = 'card-title'; name.textContent = item.name;
@@ -99,7 +130,7 @@ function card(item) {
   price.className = 'price';
   const main = document.createElement('strong');
   if (item.ton) {
-    const icon = document.createElement('span'); icon.className='ton'; icon.textContent='◈ ';
+    const icon = document.createElement('img'); icon.className='ton'; icon.src='./assets/ton.svg'; icon.alt='TON';
     main.append(icon,`${item.ton} /день`);
   } else main.textContent=`${item.rub} ₽/день`;
   const rub = document.createElement('small'); rub.textContent=item.ton?`~${item.rub} руб.`:'Демо-цена';
@@ -110,27 +141,38 @@ function card(item) {
 }
 
 function renderCatalog() {
+  animationObserver?.disconnect();
+  for (const animation of animationHandles.values()) animation.destroy();
+  animationHandles.clear();
   const items = filteredProducts();
   const title = tab === 'nft' ? $('collection').value : tab === 'username' ? 'NFT-юзернеймы' : 'NFT-номера +888';
   $('collectionTitle').textContent = title;
   $('resultNote').textContent = `${items.length} ${items.length === 1 ? 'позиция' : 'позиций'} · сохранённый снимок каталога`;
   $('grid').replaceChildren(...items.map(card));
+  document.querySelectorAll('.nft-animation').forEach(container => {
+    if (animationObserver) animationObserver.observe(container);
+  });
   $('emptyState').hidden = items.length > 0;
 }
 
 function openDetail(item,origin) {
   lastFocus = origin;
-  $('detailKind').textContent=tab==='nft'?'NFT-подарок':tab==='username'?'NFT-юзернейм':'NFT-номер';
-  $('detailTitle').textContent=tab==='nft'?`${item.name} #${item.id}`:item.name;
-  $('detailDescription').textContent=`Доступный срок: ${item.min}–${item.max} дней. Это статический образец: наличие и стоимость не обновляются.`;
-  $('detailPrice').textContent=`${item.rub} ₽/день`;
-  const art=$('detailArt'); art.className=`sheet-art art ${item.bg}`; art.textContent=item.glyph;
-  $('sheetBackdrop').hidden=false;
-  $('detailSheet').hidden=false;
-  $('closeSheet').focus();
+  const title=tab==='nft'?'NFT':tab==='username'?'Username':'Number';
+  const message=tab==='nft'?'Перейдите в бот для покупки NFT. Оплата в демо недоступна.':'Перейдите в бот для аренды. Оформление в демо недоступно.';
+  if (tg?.initData && typeof tg.showPopup === 'function') {
+    tg.showPopup({title,message,buttons:[
+      {id:'cancel',type:'cancel',text:'CANCEL'},
+      {id:'go',type:'default',text:'ПЕРЕЙТИ В БОТ'}
+    ]}, button => {if(button==='go') tg.openTelegramLink('https://t.me/UpgradeNFT178_bot');});
+    return;
+  }
+  $('purchaseTitle').textContent=title;
+  $('purchaseMessage').textContent=message;
+  $('purchaseOverlay').hidden=false;
+  $('cancelPurchase').focus();
 }
 
-function closeDetail(){ $('sheetBackdrop').hidden=true; $('detailSheet').hidden=true; lastFocus?.focus(); }
+function closeDetail(){ $('purchaseOverlay').hidden=true; lastFocus?.focus(); }
 
 const reviewExamples=[
   {product:'NFT Rent - Input Key',icon:'💎',text:'Норм, главное что дешево'},
@@ -164,9 +206,9 @@ $('copyLink').addEventListener('click',async()=>{
   try{await navigator.clipboard.writeText(url.toString());toast('Ссылка скопирована');}
   catch{toast('Не удалось скопировать ссылку');}
 });
-$('closeSheet').addEventListener('click',closeDetail);
-$('sheetBackdrop').addEventListener('click',closeDetail);
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('detailSheet').hidden)closeDetail();});
+$('cancelPurchase').addEventListener('click',closeDetail);
+$('purchaseOverlay').addEventListener('click',event=>{if(event.target===$('purchaseOverlay'))closeDetail();});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('purchaseOverlay').hidden)closeDetail();});
 document.querySelectorAll('[data-review-filter]').forEach(button=>button.addEventListener('click',()=>{
   document.querySelectorAll('[data-review-filter]').forEach(item=>{const active=item===button;item.classList.toggle('is-active',active);item.setAttribute('aria-pressed',String(active));});
   renderReviews(button.dataset.reviewFilter);
