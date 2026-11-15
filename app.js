@@ -118,10 +118,18 @@ function filteredProducts() {
       ($('numberRepeat').value === 'all' || (/([0-9])\1/.test(digits) ? 'yes' : 'no') === $('numberRepeat').value) &&
       ($('numberHasDigit').value === 'all' || digits.includes($('numberHasDigit').value));
   });
-  const sort = $('sort').value;
-  if (sort === 'price-asc') items.sort((a,b)=>Number(a.rub.replaceAll(' ',''))-Number(b.rub.replaceAll(' ','')));
-  if (sort === 'price-desc') items.sort((a,b)=>Number(b.rub.replaceAll(' ',''))-Number(a.rub.replaceAll(' ','')));
-  if (sort === 'name') items.sort((a,b)=>a.name.localeCompare(b.name,'ru'));
+  const daily = item => Number(item.rub.replaceAll(' ', ''));
+  const number = item => Number(tab === 'number' ? item.name.replace(/\D/g, '') : item.id);
+  const comparators = {
+    daily: (a, b) => daily(a) - daily(b),
+    minimum: (a, b) => daily(a) * a.min - daily(b) * b.min,
+    'duration-asc': (a, b) => a.max - b.max,
+    'duration-desc': (a, b) => b.max - a.max,
+    'number-asc': (a, b) => number(a) - number(b),
+    'number-desc': (a, b) => number(b) - number(a)
+  };
+  const compare = comparators[$('sort').value];
+  if (compare) items.sort(compare);
   return items;
 }
 
@@ -170,6 +178,9 @@ function card(item) {
 }
 
 function renderCatalog() {
+  for (const {select, value} of filterControls) {
+    if (value) value.textContent = select.id === 'collection' ? '1 выбрана' : select.selectedOptions[0]?.textContent;
+  }
   animationObserver?.disconnect();
   for (const animation of animationHandles.values()) animation.destroy();
   animationHandles.clear();
@@ -191,7 +202,7 @@ function openDetail(item,origin) {
     tg.showPopup({title,message,buttons:[
       {id:'cancel',type:'cancel',text:'CANCEL'},
       {id:'go',type:'default',text:'ПЕРЕЙТИ В БОТ'}
-    ]}, button => {if(button==='go') tg.openTelegramLink('https://t.me/UpgradeNFT178_bot');});
+    ]}, button => {if(button==='go') tg.openTelegramLink($('goToBot').href);});
     return;
   }
   $('purchaseTitle').textContent=title;
@@ -225,8 +236,87 @@ function renderReviews(filter='all'){
   }
 }
 
+const filterSheet = $('filterSheet');
+const sheetOptions = $('filterSheetOptions');
+const sheetSearch = $('filterSheetSearch');
+const searchableFilters = {
+  collection: ['Выбор коллекций', 'Поиск коллекций…'],
+  backdrop: ['Выбор фона', 'Поиск фонов…'],
+  symbol: ['Выбор символа', 'Поиск символов…']
+};
+let openFilter;
+let draftValue;
+
+function showFilterOptions() {
+  const query = sheetSearch.value.trim().toLowerCase();
+  const options = [...openFilter.options].filter(option => option.textContent.toLowerCase().includes(query));
+  sheetOptions.replaceChildren();
+  for (const option of options) {
+    const row = document.createElement('label');
+    row.className = 'filter-sheet-option';
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = 'filter-choice';
+    input.value = option.value;
+    input.checked = option.value === draftValue;
+    input.addEventListener('change', () => { draftValue = input.value; });
+    row.append(input, option.textContent);
+    sheetOptions.append(row);
+  }
+  if (!options.length) {
+    const empty = document.createElement('p');
+    empty.textContent = 'Ничего не найдено';
+    sheetOptions.append(empty);
+  }
+}
+
+const filterControls = [...document.querySelectorAll('#catalogPage .filter select, #sort')].map(select => {
+  const label = select.parentElement;
+  const isSort = select.id === 'sort';
+  const name = isSort ? 'Сортировка' : label.querySelector('span').textContent;
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = label.className + ' filter-trigger';
+  trigger.setAttribute('aria-haspopup', 'dialog');
+  trigger.setAttribute('aria-controls', 'filterSheet');
+  const value = isSort ? null : document.createElement('strong');
+  for (const child of label.children) {
+    if (child !== select && !child.classList.contains('filter-count')) trigger.append(child.cloneNode(true));
+  }
+  if (value) trigger.insertBefore(value, trigger.querySelector('i'));
+  else trigger.append(name);
+  label.hidden = true;
+  label.after(trigger);
+  trigger.addEventListener('click', () => {
+    openFilter = select;
+    draftValue = select.value;
+    const [title, placeholder] = searchableFilters[select.id] || [name];
+    $('filterSheetTitle').textContent = title;
+    sheetSearch.hidden = !placeholder;
+    sheetSearch.value = '';
+    sheetSearch.placeholder = placeholder || '';
+    sheetSearch.setAttribute('aria-label', placeholder || 'Поиск');
+    showFilterOptions();
+    sheetOptions.scrollTop = 0;
+    filterSheet.showModal();
+  });
+  return {select, value};
+});
+
+sheetSearch.addEventListener('input', showFilterOptions);
+$('closeFilterSheet').addEventListener('click', () => filterSheet.close());
+filterSheet.addEventListener('click', event => {
+  if (event.target !== filterSheet) return;
+  const bounds = filterSheet.getBoundingClientRect();
+  if (event.clientX < bounds.left || event.clientX > bounds.right ||
+      event.clientY < bounds.top || event.clientY > bounds.bottom) filterSheet.close();
+});
+$('applyFilterSheet').addEventListener('click', () => {
+  openFilter.value = draftValue;
+  filterSheet.close();
+  renderCatalog();
+});
 document.querySelectorAll('.tab').forEach(button=>button.addEventListener('click',()=>setTab(button.dataset.tab)));
-for(const id of ['collection','backdrop','symbol','sort','usernameLength','usernameDigits','usernameUnderscore','numberLength','numberEqual','numberMirror','numberUnique','numberRepeat','numberHasDigit']) $(id).addEventListener('change',renderCatalog);
 for(const id of ['usernameSearch','numberSearch']) $(id).addEventListener('input',renderCatalog);
 $('copyLink').addEventListener('click',async()=>{
   const url=new URL(location.href);url.searchParams.set('view','catalog');url.searchParams.set('tab',tab);

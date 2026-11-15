@@ -6,10 +6,10 @@
   <meta name="theme-color" content="#171717">
   <meta name="description" content="Каталог Telegram NFT, username и номеров — визуальное демо">
   <title>UpgraderNFT — каталог</title>
-  <link rel="stylesheet" href="./styles.css?v=20260924-3">
+  <link rel="stylesheet" href="./styles.css?v=20261115-2">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="./vendor/lottie.min.js?v=20260924-2"></script>
-  <script src="./app.js?v=20260924-2" defer></script>
+  <script src="./app.js?v=20261115-2" defer></script>
 </head>
 <body>
   <div class="app" id="app">
@@ -46,7 +46,7 @@
         <label class="filter"><span>Повторы подряд</span><select id="numberRepeat" aria-label="Повторы подряд"><option value="all">Все</option><option value="yes">Есть</option><option value="no">Нет</option></select><i aria-hidden="true">⌄</i></label>
         <label class="filter"><span>Наличие цифр</span><select id="numberHasDigit" aria-label="Наличие цифр"><option value="all">Все</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option></select><i aria-hidden="true">⌄</i></label>
       </section>
-      <label class="sort"><span aria-hidden="true">☷</span><select id="sort" aria-label="Сортировка"><option value="default">Сортировка</option><option value="price-asc">Сначала дешёвые</option><option value="price-desc">Сначала дорогие</option><option value="name">По названию</option></select></label>
+      <label class="sort"><span aria-hidden="true">☷</span><select id="sort" aria-label="Сортировка"><option value="default">Недавно обновлённые</option><option value="daily">По цене за день</option><option value="minimum">По минимальной цене</option><option value="duration-asc">Длительность (возр.)</option><option value="duration-desc">Длительность (убыв.)</option><option value="number-asc">Номер (возр.)</option><option value="number-desc">Номер (убыв.)</option></select></label>
 
       <div class="collection-bar"><strong id="collectionTitle">Durov’s Glasses</strong><button id="copyLink" type="button">▣ Скопировать ссылку</button></div>
       <p class="result-note" id="resultNote"></p>
@@ -63,11 +63,21 @@
     <footer>Демонстрационный интерфейс. Оплата, аренда и выдача не подключены.</footer>
   </div>
 
+  <dialog class="filter-sheet" id="filterSheet" aria-labelledby="filterSheetTitle">
+    <header class="filter-sheet-header">
+      <h2 id="filterSheetTitle"></h2>
+      <button id="closeFilterSheet" type="button" aria-label="Закрыть">×</button>
+    </header>
+    <input id="filterSheetSearch" class="filter-sheet-search" type="search" autocomplete="off" hidden>
+    <fieldset class="filter-sheet-options" id="filterSheetOptions" aria-labelledby="filterSheetTitle"></fieldset>
+    <footer class="filter-sheet-footer"><button id="applyFilterSheet" type="button">Применить</button></footer>
+  </dialog>
+
   <div class="purchase-overlay" id="purchaseOverlay" hidden>
     <section class="purchase-popup" role="dialog" aria-modal="true" aria-labelledby="purchaseTitle" aria-describedby="purchaseMessage">
       <h2 id="purchaseTitle">NFT</h2>
       <p id="purchaseMessage">Перейдите в бот для покупки NFT</p>
-      <div class="purchase-actions"><button id="cancelPurchase" type="button">CANCEL</button><a id="goToBot" href="https://t.me/UpgradeNFT178_bot">ПЕРЕЙТИ В БОТ</a></div>
+      <div class="purchase-actions"><button id="cancelPurchase" type="button">CANCEL</button><a id="goToBot" href="https://t.me/botteststarapp">ПЕРЕЙТИ В БОТ</a></div>
     </section>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
