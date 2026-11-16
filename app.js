@@ -179,7 +179,7 @@ async function loadOffers(kind, more=false) {
       return {id:parts?.[2] || String(index + 1),name:kind==='username' && !name.startsWith('@')?'@'+name:name,
         collection:parts?.[1] || name, glyph:kind==='nft'?'🎁':kind==='username'?'@':'☎', bg:'blue',
         model:traits.model, backdrop:traits.backdrop, symbol:traits.symbol,
-        min:offer.min_days,max:offer.max_days,rub:String(offer.price_gram),live:true,address:offer.address,image};
+        min:offer.min_days,max:offer.max_days,rub:String(offer.price_gram),live:true,address:offer.address,reference:offer.reference,image};
     });
     products[kind] = more ? products[kind].concat(mapped.filter(item=>!products[kind].some(old=>old.address===item.address))) : mapped;
     state.cursor = typeof data.cursor === 'string' && data.cursor !== state.cursor ? data.cursor : null;
@@ -313,7 +313,9 @@ function renderCatalog() {
 function openDetail(item,origin) {
   lastFocus = origin;
   const title=tab==='nft'?'NFT':tab==='username'?'Username':'Number';
-  const message='Перейдите в бот для аренды. Оформление в демо недоступно.';
+  const ref = item.live && /^[A-Za-z0-9_-]{12}$/.test(item.reference || '') ? `?start=r_${item.reference}` : '';
+  $('goToBot').href = `https://t.me/botteststarapp${ref}`;
+  const message=ref ? `Перейдите в бот, чтобы выбрать срок для ${item.name}. Оплата и аренда пока недоступны.` : 'Перейдите в бот для аренды. Оформление в демо недоступно.';
   if (tg?.initData && typeof tg.showPopup === 'function') {
     tg.showPopup({title,message,buttons:[
       {id:'cancel',type:'cancel',text:'CANCEL'},
