@@ -195,7 +195,9 @@ function renderCatalog() {
   animationHandles.clear();
   const items = filteredProducts();
   $('collectionTitle').textContent = $('collection').value || 'Durov’s Glasses';
-  $('resultNote').textContent = `${items.length} ${items.length === 1 ? 'позиция' : 'позиций'} · сохранённый снимок каталога`;
+  const count = items.length;
+  const word = count % 10 === 1 && count % 100 !== 11 ? 'позиция' : count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 12 || count % 100 > 14) ? 'позиции' : 'позиций';
+  $('resultNote').textContent = `${count} ${word} · сохранённый снимок каталога`;
   $('grid').replaceChildren(...items.map(card));
   document.querySelectorAll('.nft-animation').forEach(container => {
     if (animationObserver) animationObserver.observe(container);
