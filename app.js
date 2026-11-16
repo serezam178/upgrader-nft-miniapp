@@ -2,20 +2,20 @@
 const products = {
   nft: [
     {id:'2674',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',backdrop:'Azure Blue',symbol:'Cone',model:'Synthwave',min:1,max:180,ton:'0.24',rub:'29.18',animation:'2674'},
-    {id:'2338',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'violet',symbol:'Diamond',min:1,max:134,ton:'0.15',rub:'18.09',animation:'2338'},
-    {id:'1877',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'amber',backdrop:'Satin Gold',symbol:'Paw',min:1,max:34,ton:'0.22',rub:'26.26',animation:'1877'},
-    {id:'945',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',backdrop:'Neon Blue',symbol:'Dessert',min:1,max:34,ton:'0.12',rub:'14.44',animation:'945'},
-    {id:'3614',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'amber',symbol:'Diamond',min:1,max:34,ton:'0.12',rub:'14.59',animation:'3614'},
-    {id:'3289',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'amber',backdrop:'Mustard',symbol:'Bike Helmet',min:1,max:180,ton:'0.12',rub:'14.59',animation:'3289'},
-    {id:'2627',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'pine',symbol:'Star',min:1,max:180,ton:'1.21',rub:'147.35',animation:'2627'},
-    {id:'946',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',symbol:'Moon',min:1,max:34,ton:'0.12',rub:'14.44',animation:'946'},
-    {id:'779',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'violet',symbol:'Moon',min:1,max:180,ton:'0.3',rub:'36.91',animation:'779'},
-    {id:'3269',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',symbol:'Star',min:1,max:180,ton:'0.4',rub:'48.58',animation:'3269'},
-    {id:'3442',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'amber',symbol:'Diamond',min:1,max:30,ton:'0.59',rub:'71.49',animation:'3442'},
-    {id:'655',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'violet',symbol:'Moon',min:1,max:180,ton:'0.3',rub:'36.91',animation:'655'},
-    {id:'614',name:'Rare Bird',collection:'Rare Bird',glyph:'🦜',bg:'violet',symbol:'Star',min:1,max:180,rub:'5.66'},
-    {id:'615',name:'Rare Bird',collection:'Rare Bird',glyph:'🦚',bg:'blue',symbol:'Moon',min:1,max:30,rub:'4.36'},
-    {id:'616',name:'Rare Bird',collection:'Rare Bird',glyph:'🪶',bg:'amber',symbol:'Diamond',min:2,max:179,rub:'2.89'}
+    {id:'2338',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'violet',backdrop:'Grape',symbol:'Toilet Paper',model:'Googly Eyes',min:1,max:134,ton:'0.15',rub:'18.09',animation:'2338'},
+    {id:'1877',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'amber',backdrop:'Satin Gold',symbol:'Paw',model:'Finish Line',min:1,max:34,ton:'0.22',rub:'26.26',animation:'1877'},
+    {id:'945',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',backdrop:'Neon Blue',symbol:'Dessert',model:'Leopard Glam',min:1,max:34,ton:'0.12',rub:'14.44',animation:'945'},
+    {id:'3614',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'amber',backdrop:'Chestnut',symbol:'Moon Face',model:'Stardust',min:1,max:34,ton:'0.12',rub:'14.59',animation:'3614'},
+    {id:'3289',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'amber',backdrop:'Mustard',symbol:'Bike Helmet',model:'Aliens',min:1,max:180,ton:'0.12',rub:'14.59',animation:'3289'},
+    {id:'2627',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'pine',backdrop:'Onyx Black',symbol:'Wepwawet',model:'Project Mayhem',min:1,max:180,ton:'1.21',rub:'147.35',animation:'2627'},
+    {id:'946',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',backdrop:'Gunship Green',symbol:'Nemes',model:'Synthwave',min:1,max:34,ton:'0.12',rub:'14.44',animation:'946'},
+    {id:'779',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'violet',backdrop:'Tomato',symbol:'Fire',model:'Leopard Glam',min:1,max:180,ton:'0.3',rub:'36.91',animation:'779'},
+    {id:'3269',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',backdrop:'Dark Lilac',symbol:'Doberman',model:'Project Mayhem',min:1,max:180,ton:'0.4',rub:'48.58',animation:'3269'},
+    {id:'3442',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'amber',backdrop:'Onyx Black',symbol:'Dagger',model:'TON Vision',min:1,max:30,ton:'0.59',rub:'71.49',animation:'3442'},
+    {id:'655',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'violet',backdrop:'Platinum',symbol:'Spades',model:'Crystal Sight',min:1,max:180,ton:'0.3',rub:'36.91',animation:'655'},
+    {id:'614',name:'Rare Bird',collection:'Rare Bird',glyph:'🦜',bg:'violet',backdrop:'Moonstone',symbol:'Turtle',model:'Noble Puffin',min:1,max:180,rub:'5.66'},
+    {id:'615',name:'Rare Bird',collection:'Rare Bird',glyph:'🦚',bg:'blue',backdrop:'Tactical Pine',symbol:'Sombrero',model:'Silver Spike',min:1,max:30,rub:'4.36'},
+    {id:'616',name:'Rare Bird',collection:'Rare Bird',glyph:'🪶',bg:'amber',backdrop:'Shamrock Green',symbol:'Ghost',model:'Dragon',min:2,max:179,rub:'2.89'}
   ],
   username: [
     ['goldyfix','3.65',1,90],['cuavas','3.65',1,90],['sendlives','3.65',1,90],['ywopa','3.65',1,90],['wacude','3.65',1,90],['sorbish','3.65',1,90],['portbold','3.65',1,90],['mihyp','3.67',1,90],['br_0s','1.91',1,90],['tobycollyer','3.67',1,180]
@@ -180,6 +180,13 @@ function card(item) {
 }
 
 function renderCatalog() {
+  const collectionItems = products.nft.filter(item => item.collection === $('collection').value);
+  for (const key of ['backdrop', 'symbol', 'model']) {
+    const select = $(key), previous = select.value;
+    const values = [...new Set(collectionItems.map(item => item[key]).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+    select.replaceChildren(...['Все', ...values].map(value => new Option(value, value)));
+    select.value = values.includes(previous) ? previous : 'Все';
+  }
   for (const {select, value} of filterControls) {
     if (value) value.textContent = select.id === 'collection' ? '1 выбрана' : select.selectedOptions[0]?.textContent;
   }
