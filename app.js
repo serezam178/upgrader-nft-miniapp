@@ -152,7 +152,11 @@ async function loadOffers(kind, more=false) {
   const version = state.version = (state.version || 0) + 1;
   if (!more && state.loaded) { products[kind] = []; state.cursor = null; state.loaded = false; }
   state.loading = true;
-  if (kind === tab) { $('loadMore').disabled = true; $('resultNote').textContent = 'Загрузка предложений MarketApp…'; }
+  if (kind === tab) {
+    $('loadMore').disabled = true;
+    if (!more && state.version > 1) { $('grid').replaceChildren(); $('emptyState').hidden = true; }
+    $('resultNote').textContent = 'Загрузка предложений MarketApp…';
+  }
   const query = new URLSearchParams({category:categories[kind]});
   query.set('sort_by',sortKeys[$('sort').value] || 'recently_touch');
   if (kind==='nft' && liveCollections) {
