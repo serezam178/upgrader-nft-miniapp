@@ -1,4 +1,4 @@
-/* Static visual catalogue. No checkout, network API or Telegram user data. */
+/* Rental browsing uses public listings from the bot service; checkout is disabled. */
 const products = {
   nft: [
     {id:'2674',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',backdrop:'Azure Blue',symbol:'Cone',model:'Synthwave',min:1,max:180,ton:'0.24',rub:'29.18',animation:'2674'},
@@ -28,6 +28,8 @@ const products = {
 const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 let tab = 'nft';
+const liveState = Object.fromEntries(['nft','username','number'].map(key=>[key,{loaded:false,loading:false,cursor:null,failed:false}]));
+const categories = {nft:'gifts',username:'usernames',number:'numbers'};
 let lastFocus = null;
 let toastTimer;
 const animationHandles = new Map();
@@ -67,6 +69,7 @@ function toast(message) {
 
 function fillCollections() {
   const select = $('collection');
+  const previous = select.value;
   select.replaceChildren();
   const names = [...new Set(products.nft.map(item=>item.collection).filter(Boolean))];
   for (const name of names) {
@@ -75,6 +78,7 @@ function fillCollections() {
     option.textContent = name;
     select.append(option);
   }
+  if (names.includes(previous)) select.value = previous;
 }
 
 function setTab(next) {
@@ -93,6 +97,39 @@ function setTab(next) {
   $('sort').value = 'default';
   fillCollections();
   renderCatalog();
+  if (!liveState[tab].loaded && !liveState[tab].loading) loadOffers(tab);
+}
+
+async function loadOffers(kind, more=false) {
+  const state = liveState[kind];
+  if (state.loading || more && !state.cursor) return;
+  state.loading = true;
+  if (kind === tab) { $('loadMore').disabled = true; $('resultNote').textContent = 'Загрузка предложений MarketApp…'; }
+  const query = new URLSearchParams({category:categories[kind]});
+  if (more) query.set('cursor',state.cursor);
+  try {
+    const response = await fetch(`https://botteststarappbot.onrender.com/api/rent?${query}`);
+    if (!response.ok) throw new Error('catalog unavailable');
+    const data = await response.json();
+    if (!Array.isArray(data.items)) throw new Error('invalid catalog');
+    const mapped = data.items.map((offer,index)=>{
+      const name = String(offer.name), parts = name.match(/^(.*?)\s*#(\d+)$/);
+      const traits = Object.fromEntries(Object.entries(offer.attributes || {}).map(([k,v])=>[k.toLowerCase(),v]));
+      return {id:parts?.[2] || String(index + 1),name:kind==='username' && !name.startsWith('@')?'@'+name:name,
+        collection:parts?.[1] || name, glyph:kind==='nft'?'🎁':kind==='username'?'@':'☎', bg:'blue',
+        model:traits.model, backdrop:traits.backdrop, symbol:traits.symbol,
+        min:offer.min_days,max:offer.max_days,rub:String(offer.price_gram),live:true,address:offer.address};
+    });
+    products[kind] = more ? products[kind].concat(mapped.filter(item=>!products[kind].some(old=>old.address===item.address))) : mapped;
+    state.cursor = typeof data.cursor === 'string' && data.cursor !== state.cursor ? data.cursor : null;
+    state.loaded = true; state.failed = false;
+  } catch {
+    state.failed = true;
+    if (more && kind === tab) toast('Не удалось загрузить следующую страницу');
+  } finally {
+    state.loading = false;
+    if (kind === tab) { if (kind==='nft') fillCollections(); renderCatalog(); }
+  }
 }
 
 function filteredProducts() {
@@ -139,7 +176,7 @@ function card(item) {
   const button = document.createElement('button');
   button.className = 'card';
   button.type = 'button';
-  button.setAttribute('aria-label',`${item.name} ${item.id}, ${item.rub} рублей`);
+  button.setAttribute('aria-label',`${item.name}, ${item.rub} ${item.live?'GRAM':'рублей'} в день`);
   const art = document.createElement('div');
   art.className = `art ${item.bg}`;
   const id = document.createElement('span');
@@ -168,11 +205,12 @@ function card(item) {
   const price = document.createElement('div');
   price.className = 'price';
   const main = document.createElement('strong');
-  if (item.ton) {
+  if (item.live) main.textContent=`${item.rub} GRAM/день`;
+  else if (item.ton) {
     const icon = document.createElement('img'); icon.className='ton'; icon.src='./assets/ton.svg'; icon.alt='TON';
     main.append(icon,`${item.ton} /день`);
   } else main.textContent=`${item.rub} ₽/день`;
-  const rub = document.createElement('small'); rub.textContent=item.ton?`~${item.rub} руб.`:'Демо-цена';
+  const rub = document.createElement('small'); rub.textContent=item.live?'MarketApp':item.ton?`~${item.rub} руб.`:'Демо-цена';
   price.append(main,rub);
   button.append(art,name,price);
   button.addEventListener('click',()=>openDetail(item,button));
@@ -197,7 +235,10 @@ function renderCatalog() {
   $('collectionTitle').textContent = $('collection').value || 'Durov’s Glasses';
   const count = items.length;
   const word = count % 10 === 1 && count % 100 !== 11 ? 'позиция' : count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 12 || count % 100 > 14) ? 'позиции' : 'позиций';
-  $('resultNote').textContent = `${count} ${word} · сохранённый снимок каталога`;
+  const state = liveState[tab];
+  $('resultNote').textContent = `${count} ${word} · ${state.loaded?'MarketApp, загруженные предложения':state.failed?'сохранённый снимок: MarketApp недоступен':'сохранённый снимок каталога'}`;
+  $('loadMore').hidden = !state.loaded || !state.cursor;
+  $('loadMore').disabled = state.loading;
   $('grid').replaceChildren(...items.map(card));
   document.querySelectorAll('.nft-animation').forEach(container => {
     if (animationObserver) animationObserver.observe(container);
@@ -208,7 +249,7 @@ function renderCatalog() {
 function openDetail(item,origin) {
   lastFocus = origin;
   const title=tab==='nft'?'NFT':tab==='username'?'Username':'Number';
-  const message=tab==='nft'?'Перейдите в бот для покупки NFT. Оплата в демо недоступна.':'Перейдите в бот для аренды. Оформление в демо недоступно.';
+  const message='Перейдите в бот для аренды. Оформление в демо недоступно.';
   if (tg?.initData && typeof tg.showPopup === 'function') {
     tg.showPopup({title,message,buttons:[
       {id:'cancel',type:'cancel',text:'CANCEL'},
@@ -330,6 +371,7 @@ $('applyFilterSheet').addEventListener('click', () => {
 });
 document.querySelectorAll('.tab').forEach(button=>button.addEventListener('click',()=>setTab(button.dataset.tab)));
 for(const id of ['usernameSearch','numberSearch']) $(id).addEventListener('input',renderCatalog);
+$('loadMore').addEventListener('click',()=>loadOffers(tab,true));
 $('copyLink').addEventListener('click',async()=>{
   const url=new URL(location.href);url.searchParams.set('view','catalog');url.searchParams.set('tab',tab);
   if(tab==='nft')url.searchParams.set('collection',$('collection').value);
