@@ -115,10 +115,13 @@ async function loadOffers(kind, more=false) {
     const mapped = data.items.map((offer,index)=>{
       const name = String(offer.name), parts = name.match(/^(.*?)\s*#(\d+)$/);
       const traits = Object.fromEntries(Object.entries(offer.attributes || {}).map(([k,v])=>[k.toLowerCase(),v]));
+      const imageKey = kind==='nft' && parts ? `${parts[1].replace(/[^a-z0-9]/gi,'').toLowerCase()}-${parts[2]}` :
+        kind==='username' ? name.replace(/^@/,'').toLowerCase() : name.replace(/\D/g,'');
+      const image = /^[a-z0-9_-]+$/.test(imageKey) ? `https://nft.fragment.com/${kind==='nft'?'gift':kind}/${imageKey}.webp` : undefined;
       return {id:parts?.[2] || String(index + 1),name:kind==='username' && !name.startsWith('@')?'@'+name:name,
         collection:parts?.[1] || name, glyph:kind==='nft'?'🎁':kind==='username'?'@':'☎', bg:'blue',
         model:traits.model, backdrop:traits.backdrop, symbol:traits.symbol,
-        min:offer.min_days,max:offer.max_days,rub:String(offer.price_gram),live:true,address:offer.address};
+        min:offer.min_days,max:offer.max_days,rub:String(offer.price_gram),live:true,address:offer.address,image};
     });
     products[kind] = more ? products[kind].concat(mapped.filter(item=>!products[kind].some(old=>old.address===item.address))) : mapped;
     state.cursor = typeof data.cursor === 'string' && data.cursor !== state.cursor ? data.cursor : null;
@@ -232,7 +235,7 @@ function renderCatalog() {
   for (const animation of animationHandles.values()) animation.destroy();
   animationHandles.clear();
   const items = filteredProducts();
-  $('collectionTitle').textContent = $('collection').value || 'Durov’s Glasses';
+  $('collectionTitle').textContent = tab==='nft' ? ($('collection').value || 'NFT') : tab==='username' ? 'Username' : 'Number';
   const count = items.length;
   const word = count % 10 === 1 && count % 100 !== 11 ? 'позиция' : count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 12 || count % 100 > 14) ? 'позиции' : 'позиций';
   const state = liveState[tab];
