@@ -1,12 +1,12 @@
 /* Static visual catalogue. No checkout, network API or Telegram user data. */
 const products = {
   nft: [
-    {id:'2674',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',symbol:'Star',min:1,max:180,ton:'0.24',rub:'29.18',animation:'2674'},
+    {id:'2674',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',backdrop:'Azure Blue',symbol:'Cone',model:'Synthwave',min:1,max:180,ton:'0.24',rub:'29.18',animation:'2674'},
     {id:'2338',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'violet',symbol:'Diamond',min:1,max:134,ton:'0.15',rub:'18.09',animation:'2338'},
-    {id:'1877',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'amber',symbol:'Moon',min:1,max:34,ton:'0.22',rub:'26.26',animation:'1877'},
-    {id:'945',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',symbol:'Star',min:1,max:34,ton:'0.12',rub:'14.44',animation:'945'},
+    {id:'1877',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'amber',backdrop:'Satin Gold',symbol:'Paw',min:1,max:34,ton:'0.22',rub:'26.26',animation:'1877'},
+    {id:'945',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',backdrop:'Neon Blue',symbol:'Dessert',min:1,max:34,ton:'0.12',rub:'14.44',animation:'945'},
     {id:'3614',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'amber',symbol:'Diamond',min:1,max:34,ton:'0.12',rub:'14.59',animation:'3614'},
-    {id:'3289',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'amber',symbol:'Star',min:1,max:180,ton:'0.12',rub:'14.59',animation:'3289'},
+    {id:'3289',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'amber',backdrop:'Mustard',symbol:'Bike Helmet',min:1,max:180,ton:'0.12',rub:'14.59',animation:'3289'},
     {id:'2627',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🥽',bg:'pine',symbol:'Star',min:1,max:180,ton:'1.21',rub:'147.35',animation:'2627'},
     {id:'946',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'blue',symbol:'Moon',min:1,max:34,ton:'0.12',rub:'14.44',animation:'946'},
     {id:'779',name:'Durov’s Glasses',collection:'Durov’s Glasses',glyph:'🕶️',bg:'violet',symbol:'Moon',min:1,max:180,ton:'0.3',rub:'36.91',animation:'779'},
@@ -89,6 +89,7 @@ function setTab(next) {
   $('numberFilters').hidden = tab !== 'number';
   $('backdrop').value = 'Все';
   $('symbol').value = 'Все';
+  $('model').value = 'Все';
   $('sort').value = 'default';
   fillCollections();
   renderCatalog();
@@ -97,8 +98,9 @@ function setTab(next) {
 function filteredProducts() {
   let items = products[tab].filter(item => {
     if (tab === 'nft') return item.collection === $('collection').value &&
-      ($('backdrop').value === 'Все' || item.bg === ({Amber:'amber',Slate:'slate',Violet:'violet','Pine Green':'pine'}[$('backdrop').value])) &&
-      ($('symbol').value === 'Все' || item.symbol === $('symbol').value);
+      ($('backdrop').value === 'Все' || item.backdrop === $('backdrop').value) &&
+      ($('symbol').value === 'Все' || item.symbol === $('symbol').value) &&
+      ($('model').value === 'Все' || item.model === $('model').value);
     if (tab === 'username') {
       const name = item.name.slice(1);
       const length = $('usernameLength').value;
@@ -242,7 +244,8 @@ const sheetSearch = $('filterSheetSearch');
 const searchableFilters = {
   collection: ['Выбор коллекций', 'Поиск коллекций…'],
   backdrop: ['Выбор фона', 'Поиск фонов…'],
-  symbol: ['Выбор символа', 'Поиск символов…']
+  symbol: ['Выбор символа', 'Поиск символов…'],
+  model: ['Выбор модели', 'Поиск моделей…']
 };
 let openFilter;
 let draftValue;

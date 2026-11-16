@@ -28,8 +28,9 @@
 
       <section class="filters" id="nftFilters" aria-label="Фильтры NFT">
         <label class="filter filter-half" id="collectionFilter"><span>Коллекции</span><select id="collection" aria-label="Коллекции"></select><strong class="filter-count" aria-hidden="true">1 выбрана</strong><i aria-hidden="true">⌄</i></label>
-        <label class="filter filter-half" id="backdropFilter"><span>Фон</span><select id="backdrop" aria-label="Фон"><option>Все</option><option>Amber</option><option>Slate</option><option>Violet</option><option>Pine Green</option></select><i aria-hidden="true">⌄</i></label>
-        <label class="filter filter-wide" id="symbolFilter"><span>Символ</span><select id="symbol" aria-label="Символ"><option>Все</option><option>Moon</option><option>Star</option><option>Diamond</option></select><i aria-hidden="true">⌄</i></label>
+        <label class="filter filter-half" id="backdropFilter"><span>Фон</span><select id="backdrop" aria-label="Фон"><option>Все</option><option>Azure Blue</option><option>Neon Blue</option><option>Satin Gold</option><option>Mustard</option></select><i aria-hidden="true">⌄</i></label>
+        <label class="filter filter-half" id="symbolFilter"><span>Символ</span><select id="symbol" aria-label="Символ"><option>Все</option><option>Cone</option><option>Dessert</option><option>Paw</option><option>Bike Helmet</option></select><i aria-hidden="true">⌄</i></label>
+        <label class="filter filter-half" id="modelFilter"><span>Модель</span><select id="model" aria-label="Модель"><option>Все</option><option>Synthwave</option></select><i aria-hidden="true">⌄</i></label>
       </section>
       <section class="filters" id="usernameFilters" aria-label="Фильтры Username" hidden>
         <label class="search-filter"><span aria-hidden="true">⌕</span><input id="usernameSearch" type="search" placeholder="Поиск username..." aria-label="Поиск username" autocomplete="off"></label>
@@ -48,7 +49,7 @@
       </section>
       <label class="sort"><span aria-hidden="true">☷</span><select id="sort" aria-label="Сортировка"><option value="default">Недавно обновлённые</option><option value="daily">По цене за день</option><option value="minimum">По минимальной цене</option><option value="duration-asc">Длительность (возр.)</option><option value="duration-desc">Длительность (убыв.)</option><option value="number-asc">Номер (возр.)</option><option value="number-desc">Номер (убыв.)</option></select></label>
 
-      <div class="collection-bar"><strong id="collectionTitle">Durov’s Glasses</strong><button id="copyLink" type="button">▣ Скопировать ссылку</button></div>
+      <div class="collection-bar"><strong id="collectionTitle">Durov’s Glasses</strong><button id="copyLink" type="button"><span class="copy-icon" aria-hidden="true"></span>Скопировать ссылку</button></div>
       <p class="result-note" id="resultNote"></p>
       <div class="grid" id="grid" aria-live="polite"></div>
       <div class="empty" id="emptyState" hidden>По этим фильтрам ничего не найдено. Выбери другую коллекцию или фон.</div>
