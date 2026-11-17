@@ -26,6 +26,7 @@ const products = {
 };
 
 const $ = id => document.getElementById(id);
+const displayPrice = value => Number(value) > 0 && Number(value) < 0.005 ? '<0.01' : Number(value).toFixed(2);
 const params = new URLSearchParams(location.search);
 let tab = 'nft';
 const liveState = Object.fromEntries(['nft','username','number'].map(key=>[key,{loaded:false,loading:false,cursor:null,failed:false}]));
@@ -197,6 +198,7 @@ async function loadOffers(kind, more=false) {
 
 function filteredProducts() {
   let items = products[tab].filter(item => {
+    if (!item.live) return false;
     if (tab === 'nft') return (liveCollections && item.live || item.collection === $('collection').value) &&
       ($('backdrop').value === 'Все' || item.backdrop === $('backdrop').value) &&
       ($('symbol').value === 'Все' || item.symbol === $('symbol').value) &&
@@ -239,7 +241,7 @@ function card(item) {
   const button = document.createElement('button');
   button.className = 'card';
   button.type = 'button';
-  button.setAttribute('aria-label',`${item.name}, ${item.rub} ${item.live?'GRAM':'рублей'} в день`);
+  button.setAttribute('aria-label',`${item.name}, ${item.live ? displayPrice(item.rub) : item.rub} ${item.live?'GRAM':'рублей'} в день`);
   const art = document.createElement('div');
   art.className = `art ${item.bg}`;
   const id = document.createElement('span');
@@ -257,18 +259,18 @@ function card(item) {
   if (item.image) {
     const photo = document.createElement('img');
     photo.className='nft-photo'; photo.src=item.image; photo.alt=''; photo.loading='lazy';
-    photo.addEventListener('error',()=>{photo.remove();art.append(glyph);});
+    photo.addEventListener('error',()=>{photo.remove();art.classList.add('image-unavailable');});
     art.append(photo);
   }
   if (tab === 'nft') art.append(id);
-  if (!item.image) art.append(glyph);
+  if (!item.image && tab !== 'nft') art.append(glyph);
   art.append(duration);
   const name = document.createElement('strong');
   name.className = 'card-title'; name.textContent = item.name;
   const price = document.createElement('div');
   price.className = 'price';
   const main = document.createElement('strong');
-  if (item.live) main.textContent=`${item.rub} GRAM/день`;
+  if (item.live) main.textContent=`${displayPrice(item.rub)} GRAM/день`;
   else if (item.ton) {
     const icon = document.createElement('img'); icon.className='ton'; icon.src='./assets/ton.svg'; icon.alt='TON';
     main.append(icon,`${item.ton} /день`);
